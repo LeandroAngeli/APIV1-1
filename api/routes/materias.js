@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 
-router.get("/", (req, res, next) => {
-
+router.get("/", (req, res) => {
     models.materia.findAll({
         attributes: ["id", "nombre", "id_carrera"],
         /////////se agrega la asociacion 
         include: [{ as: 'Carrera-Relacionada', model: models.carrera, attributes: ["id", "nombre"] }]
         ////////////////////////////////
-    }).then(materias => res.send(materias)).catch(error => { return next(error) });
+    }).then(materia => res.send(materia)).catch(() => res.sendStatus(500));
 });
 
 router.post('/nuevaMateria', (req, res) => {
@@ -19,9 +18,9 @@ router.post('/nuevaMateria', (req, res) => {
             attributes: ["id", "nombre"],
             where: { nombre }
         }).then(mat => mat ? res.status(400).send({ message: 'Bad request: existe otra materia con el mismo nombre' }) :
-            models.materia
-                .create({ nombre: req.body.nombre })
-                .then(materia => res.status(200).send(materia.nombre))
+        models.materia
+            .create({ nombre: req.body.nombre, id_carrera: req.body.id_carrera})
+            .then(materia => res.status(200).send(materia.nombre))
         ).catch((error) => {
             console.log(`Error al intentar insertar en la base de datos: ${error}`)
             res.sendStatus(500)
