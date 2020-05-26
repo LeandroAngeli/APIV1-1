@@ -1,9 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const materia = sequelize.define('materia', {
-    id: DataTypes.INTEGER,
-    id_carrera: DataTypes.INTEGER,
-    nombre: DataTypes.STRING
+    nombre: DataTypes.STRING,
+    id_carrera: DataTypes.INTEGER
   }, {}); 
   
   materia.associate = function(models) {

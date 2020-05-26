@@ -1,7 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const carrera = sequelize.define('carrera', {
-    id: DataTypes.INTEGER,
     nombre: DataTypes.STRING
   }, {});
 

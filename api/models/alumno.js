@@ -1,9 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const alumno = sequelize.define('alumno', {
-    id: DataTypes.INTEGER,
-    id_carrera: DataTypes.INTEGER,
-    nombre: DataTypes.STRING
+    nombre: DataTypes.STRING,
+    id_carrera: DataTypes.INTEGER
   }, {}); 
   
   alumno.associate = function(models) {
