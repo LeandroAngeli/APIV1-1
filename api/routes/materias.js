@@ -6,8 +6,7 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.materia
     .findAll({
-      attributes: ["nombre", "id_carrera"],
-      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
+      attributes: ["id", "nombre"]
     })
     .then(materias => res.send(materias))
     .catch(() => res.sendStatus(500));
@@ -28,10 +27,10 @@ router.post("/", (req, res) => {
     });
 });
 
-const findMateria = (id, { onSuccess, onNotFound, onError }) => {
+const findmateria = (id, { onSuccess, onNotFound, onError }) => {
   models.materia
     .findOne({
-      attributes: ["id", "nombre", "id_carrera"],
+      attributes: ["id", "nombre"],
       where: { id }
     })
     .then(materia => (materia ? onSuccess(materia) : onNotFound()))
@@ -39,7 +38,7 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findMateria(req.params.id, {
+  findmateria(req.params.id, {
     onSuccess: materia => res.send(materia),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -60,7 +59,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findMateria(req.params.id, {
+    findmateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -73,7 +72,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findMateria(req.params.id, {
+  findmateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)

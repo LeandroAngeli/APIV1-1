@@ -5,8 +5,9 @@ var models = require("../models");
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.alumno
-    .findAll({ attributes: [ "nombre", "id_carrera"],
-    include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}] })
+    .findAll({
+      attributes: ["id", "nombre"]
+    })
     .then(alumnos => res.send(alumnos))
     .catch(() => res.sendStatus(500));
 });
@@ -17,7 +18,7 @@ router.post("/", (req, res) => {
     .then(alumno => res.status(201).send({ id: alumno.id }))
     .catch(error => {
       if (error == "SequelizeUniqueConstraintError: Validation error") {
-        res.status(400).send('Bad request: existe otra alumno con el mismo id')
+        res.status(400).send('Bad request: existe otra alumno con el mismo nombre')
       }
       else {
         console.log(`Error al intentar insertar en la base de datos: ${error}`)
@@ -29,7 +30,7 @@ router.post("/", (req, res) => {
 const findalumno = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno
     .findOne({
-      attributes: ["id", "id_carrera", "nombre"],
+      attributes: ["id", "nombre"],
       where: { id }
     })
     .then(alumno => (alumno ? onSuccess(alumno) : onNotFound()))
@@ -51,7 +52,7 @@ router.put("/:id", (req, res) => {
       .then(() => res.sendStatus(200))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: existe otra alumno con el mismo id')
+          res.status(400).send('Bad request: existe otra alumno con el mismo nombre')
         }
         else {
           console.log(`Error al intentar actualizar la base de datos: ${error}`)
