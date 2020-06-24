@@ -17,3 +17,12 @@
      npx sequelize-cli model:generate --name carrera --attributes nombre:string
      npx sequelize db:migrate
 
+Sintaxis: 
+
+https://sequelize.org/master/manual/model-querying-basics.html#applying-where-clauses
+
+
+Ejecutar xampp:
+
+cd /opt/lampp
+sudo ./manager-linux-x64.run

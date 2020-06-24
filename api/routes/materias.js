@@ -2,15 +2,35 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
+// router.get("/", (req, res) => {
+//   console.log("Esto es un mensaje para ver en consola");
+//   models.materias
+//     .findAll({
+//       attributes: ["id", "nombre", "id_carrera"],
+//       include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
+//     })
+//     .then(materias => res.send(materias))
+//     .catch(() => res.sendStatus(500));
+// });
+
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
-  models.materias
+  const paginaActual = parseInt(req.query.paginaActual);
+  const cantidadAVer = parseInt(req.query.cantidadAVer);
+
+  try{
+    models.materias
     .findAll({
-      attributes: ["id", "nombre", "id_carrera"],
-      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
-    })
-    .then(materias => res.send(materias))
-    .catch(() => res.sendStatus(500));
+        attributes: ["id", "nombre", "id_carrera"],
+        include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
+        offset: (paginaActual - 1) * cantidadAVer, 
+        limit: cantidadAVer        
+      })
+      .then(materias => res.send(materias))
+      .catch(() => res.sendStatus(500));
+  }
+  catch{
+    console.log("hello")
+  }
 });
 
 router.post("/", (req, res) => {
@@ -38,13 +58,13 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
     .catch(() => onError());
 };
 
-router.get("/:id", (req, res) => {
-  findCarrera(req.params.id, {
-    onSuccess: materia => res.send(materia),
-    onNotFound: () => res.sendStatus(404),
-    onError: () => res.sendStatus(500)
-  });
-});
+// router.get("/:id", (req, res) => {
+//   findCarrera(req.params.id, {
+//     onSuccess: materia => res.send(materia),
+//     onNotFound: () => res.sendStatus(404),
+//     onError: () => res.sendStatus(500)
+//   });
+// });
 
 router.put("/:id", (req, res) => {
   const onSuccess = materia =>
