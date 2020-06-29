@@ -6,6 +6,9 @@ var logger = require('morgan');
 var carrerasRouter = require('./routes/carreras');
 var materiasRouter = require('./routes/materias');
 var alumnosRouter = require('./routes/alumnos');
+var materiasPaginacion = require('./routes/materiasPaginacion');
+var alumnosPaginacion = require('./routes/alumnosPaginacion');
+var carrerasPaginacion = require('./routes/carrerasPaginacion')
 
 
 var app = express();
@@ -24,6 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/mat', materiasRouter);
 app.use('/car', carrerasRouter);
 app.use('/alu', alumnosRouter);
+app.use('/matPag', materiasPaginacion);
+app.use('/aluPag', alumnosPaginacion);
+app.use('/carPag', carrerasPaginacion)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
