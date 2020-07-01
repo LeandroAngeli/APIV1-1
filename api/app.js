@@ -6,9 +6,11 @@ var logger = require('morgan');
 var carrerasRouter = require('./routes/carreras');
 var materiasRouter = require('./routes/materias');
 var alumnosRouter = require('./routes/alumnos');
+var universidadesRouter  = require('./routes/universidades');
+var institutosRouter = require('./routes/institutos');
 var materiasPaginacion = require('./routes/materiasPaginacion');
 var alumnosPaginacion = require('./routes/alumnosPaginacion');
-var carrerasPaginacion = require('./routes/carrerasPaginacion')
+var carrerasPaginacion = require('./routes/carrerasPaginacion');
 
 
 var app = express();
@@ -27,6 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/mat', materiasRouter);
 app.use('/car', carrerasRouter);
 app.use('/alu', alumnosRouter);
+app.use('/uni', universidadesRouter);
+app.use('/ins', institutosRouter);
 app.use('/matPag', materiasPaginacion);
 app.use('/aluPag', alumnosPaginacion);
 app.use('/carPag', carrerasPaginacion)
