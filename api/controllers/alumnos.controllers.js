@@ -1,10 +1,22 @@
 const models = require('../models');
 
-const getAlumnos = (req, res) => {
-    models.alumno.findAll({
-        attributes: ["id", "nombre", "id_carrera"],
-        include: [{ as: 'Carrera-Relacionada', model: models.carrera, attributes: ["id", "nombre"] }]
-    }).then(alumno => res.send(alumno)).catch(() => res.sendStatus(500));
+const getAlumnos = async (req, res) => {
+    const { numPagina, tamanioPagina } = req.query;
+    console.log(typeof numPagina);
+    console.log(typeof tamanioPagina);
+
+    try {
+        const alumnos = await models.alumno.findAll({
+            attributes: ["id", "nombre", "id_carrera"],
+            include: [{ as: 'Carrera-Relacionada', model: models.carrera, attributes: ["id", "nombre"] }],
+            offset: (Number(numPagina)- 1) * Number(tamanioPagina),
+            limit: Number(tamanioPagina)
+        });
+        res.send(alumnos);
+    } catch{
+        res.sendStatus(500);
+    }
+    
 }
 
 const agregarAlumno = (req, res) => {

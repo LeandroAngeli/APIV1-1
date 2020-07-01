@@ -1,21 +1,20 @@
 const models = require('../models');
 
-const findMateriaId = (id, { onSuccess, onNotFound, onError }) => {
-    models.materia
-        .findOne({
-            attributes: ["id", "nombre"],
-            where: { id }
-        })
-        .then(materia => (materia ? onSuccess(materia) : onNotFound()))
-        .catch(() => onError());
-};
-
-const getMaterias = (req, res) => {
-    models.materia.findAll({
-        attributes: ["id", "nombre", "id_carrera"],
-        /////////se agrega la asociacion 
-        include: [{ as: 'Carrera-Relacionada', model: models.carrera, attributes: ["id", "nombre"] }]
-    }).then(materia => res.send(materia)).catch(() => res.sendStatus(500));
+const getMaterias = async (req, res) => {
+    const { numPagina, tamanioPagina } = req.query;
+    console.log(numPagina);
+    console.log(tamanioPagina);
+    try {
+        const materias = await models.materia.findAll({
+            attributes: ["id", "nombre", "id_carrera"],
+            include: [{ as: 'Carrera-Relacionada', model: models.carrera, attributes: ["id", "nombre"] }],
+            offset: (Number(numPagina)- 1) * Number(tamanioPagina),
+            limit: Number(tamanioPagina)
+        });
+        res.send(materias);
+    } catch{
+        res.sendStatus(500);
+    }
 }
 
 const agregarMateria = (req, res) => {
@@ -45,14 +44,24 @@ const getMateriaId = (req, res) => {
     });
 }
 
+const findMateriaId = (id, { onSuccess, onNotFound, onError }) => {
+    models.materia
+        .findOne({
+            attributes: ["id", "nombre"],
+            where: { id }
+        })
+        .then(materia => (materia ? onSuccess(materia) : onNotFound()))
+        .catch(() => onError());
+}
+
 const actualizarMateria = (req, res) => {
-    
+
     const onSuccess = materia => {
         models.materia.findOne({
             where: { nombre: req.body.nombre }
         })
             .then(mat => mat ? res.status(400).send({ message: 'Bad request: existe otra materia con el mismo nombre' }) :
-                materia.update({ nombre: req.body.nombre }, { fields: ["nombre"]})
+                materia.update({ nombre: req.body.nombre }, { fields: ["nombre"] })
                     .then(response => res.send(response))
             )
             .catch(error => console.log(error))
