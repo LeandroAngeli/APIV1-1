@@ -6,7 +6,9 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.materia
     .findAll({
-      attributes: ["id", "nombre"]
+      attributes: ["id","nombre", "id_carrera"] ,
+      include: [{ as: "Carrera-Relacionada", model: models.carrera, attributes: [ "id", "nombre" ]
+    }]
     })
     .then(materias => res.send(materias))
     .catch(() => res.sendStatus(500));
@@ -14,7 +16,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   models.materia
-    .create({ nombre: req.body.nombre })
+    .create({ nombre: req.body.nombre , id_carrera: req.body.id_carrera })
     .then(materia => res.status(201).send({ id: materia.id }))
     .catch(error => {
       if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -27,10 +29,10 @@ router.post("/", (req, res) => {
     });
 });
 
-const findmateria = (id, { onSuccess, onNotFound, onError }) => {
+const findMateria = (id, { onSuccess, onNotFound, onError }) => {
   models.materia
     .findOne({
-      attributes: ["id", "nombre"],
+      attributes: ["id", "nombre", "id_carrera"],
       where: { id }
     })
     .then(materia => (materia ? onSuccess(materia) : onNotFound()))
@@ -38,7 +40,7 @@ const findmateria = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findmateria(req.params.id, {
+  findMateria(req.params.id, {
     onSuccess: materia => res.send(materia),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -49,6 +51,7 @@ router.put("/:id", (req, res) => {
   const onSuccess = materia =>
     materia
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
+      .update({ id_carrera: req.body.id_carrera }, { fields: ["id_carrera"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -59,7 +62,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findmateria(req.params.id, {
+    findMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -72,7 +75,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findmateria(req.params.id, {
+  findMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)

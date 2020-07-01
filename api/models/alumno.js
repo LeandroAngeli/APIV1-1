@@ -4,12 +4,10 @@ module.exports = (sequelize, DataTypes) => {
     nombre: DataTypes.STRING,
     id_carrera: DataTypes.INTEGER
   }, {});
-
   alumno.associate = function(models) {
-    alumno.belongsTo( models.carrera
-    ,{
-      as : 'Carrera-Relacionada',  
-      foreignKey: 'id_carrera'     
+    alumno.belongsTo(models.carrera, { 
+      as: "Carrera-Relacionada", 
+      foreignKey: "id_carrera"
     })
   };
   return alumno;

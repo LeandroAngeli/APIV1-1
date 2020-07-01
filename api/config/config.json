@@ -5,6 +5,6 @@
     "database": "tpPersistencia",
     "host": "localhost",
     "dialect": "mariadb",
-    "operatorsAliases": false
+    "operatorsAliases": 0
   }
 }
