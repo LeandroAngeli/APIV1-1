@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.instituto
     .findAll({
-      attributes: ["id", "nombre", "id_universidad"],
+      attributes: ["id", "nombre", "director","id_universidad"],
       include:[{as:'Universidad-Relacionada', model:models.universidades, attributes: ["id","nombre"]}]
     })
     .then(instituto => res.send(instituto))
@@ -28,10 +28,10 @@ router.post("/", (req, res) => {
     });
 });
 
-const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
+const findInstituto = (id, { onSuccess, onNotFound, onError }) => {
   models.instituto
     .findOne({
-      attributes: ["id", "nombre", "id_carrera"],
+      attributes: ["id", "nombre","director" ,"id_universidad"],
       where: { id }
     })
     .then(instituto => (instituto ? onSuccess(instituto) : onNotFound()))
@@ -39,7 +39,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findCarrera(req.params.id, {
+  findInstituto(req.params.id, {
     onSuccess: instituto => res.send(instituto),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -49,7 +49,7 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
   const onSuccess = instituto =>
   instituto
-      .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
+      .update({ nombre: req.body.nombre, director: req.body.director }, { fields: ["nombre", "director"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -60,7 +60,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findCarrera(req.params.id, {
+    findInstituto(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -73,7 +73,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findCarrera(req.params.id, {
+  findInstituto(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)

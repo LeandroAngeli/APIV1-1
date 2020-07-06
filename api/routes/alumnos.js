@@ -3,15 +3,20 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
+  const cantidadAVer = parseInt(req.query.cantidadAVer);
+  const paginaActual = parseInt(req.query.paginaActual);
+
   models.alumno
     .findAll({
       attributes: ["id", "nombre", "id_carrera"],
-      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
+      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
+      offset: (paginaActual - 1) * cantidadAVer, 
+      limit: cantidadAVer        
     })
     .then(alumno => res.send(alumno))
     .catch(() => res.sendStatus(500));
 });
+
 
 router.post("/", (req, res) => {
   models.alumno
@@ -28,7 +33,7 @@ router.post("/", (req, res) => {
     });
 });
 
-const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
+const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno
     .findOne({
       attributes: ["id", "nombre", "id_carrera"],
@@ -40,7 +45,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findCarrera(req.params.id, {
+  findAlumno(req.params.id, {
     onSuccess: alumno => res.send(alumno),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -61,7 +66,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findCarrera(req.params.id, {
+    findAlumno(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -74,7 +79,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findCarrera(req.params.id, {
+  findAlumno(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)

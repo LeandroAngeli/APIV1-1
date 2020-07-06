@@ -3,18 +3,28 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
-  models.materias
+  const paginaActual = parseInt(req.query.paginaActual);
+  const cantidadAVer = parseInt(req.query.cantidadAVer);
+
+  try{
+    models.materia
     .findAll({
-      attributes: ["id", "nombre", "id_carrera"],
-      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
-    })
-    .then(materias => res.send(materias))
-    .catch(() => res.sendStatus(500));
+        attributes: ["id", "nombre", "id_carrera"],
+        include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
+        offset: (paginaActual - 1) * cantidadAVer, 
+        limit: cantidadAVer        
+      })
+      .then(materias => res.send(materias))
+      .catch(() => res.sendStatus(500));
+  }
+  catch{
+    console.log("Error")
+  }
 });
 
+
 router.post("/", (req, res) => {
-  models.materias
+  models.materia
     .create({ nombre: req.body.nombre, id_carrera: req.body.id_carrera })
     .then(materia => res.status(201).send({ id: materia.id }))
     .catch(error => {
@@ -28,8 +38,8 @@ router.post("/", (req, res) => {
     });
 });
 
-const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
-  models.materias
+const findMateria = (id, { onSuccess, onNotFound, onError }) => {
+  models.materia
     .findOne({
       attributes: ["id", "nombre", "id_carrera"],
       where: { id }
@@ -39,7 +49,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findCarrera(req.params.id, {
+  findMateria(req.params.id, {
     onSuccess: materia => res.send(materia),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -60,7 +70,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findCarrera(req.params.id, {
+    findMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -73,7 +83,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findCarrera(req.params.id, {
+  findMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
