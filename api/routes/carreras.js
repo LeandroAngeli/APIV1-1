@@ -4,9 +4,14 @@ var models = require("../models");
 
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
+  const paginaActual = parseInt(req.query.numeroDePagina);
+  const limite = parseInt(req.query.cantidadColumnas);
+
   models.carrera
     .findAll({
-      attributes: ["id", "nombre"]
+      attributes: ["id", "nombre"],
+      offset: (paginaActual-1) * limite,
+      limit: limite
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
