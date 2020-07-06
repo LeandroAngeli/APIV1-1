@@ -15,7 +15,7 @@ router.get("/", (req, res) => {
       offset: (paginaActual - 1 ) * limite,
       limit: limite
     })
-    .then(carreras => res.send(carreras))
+    .then(materia => res.send(materia))
     .catch(() => res.sendStatus(500));
 });
 

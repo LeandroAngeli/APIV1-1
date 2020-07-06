@@ -3,12 +3,17 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  models.alumno
+  const paginaActual = parseInt(req.query.numeroDePagina);
+  const limite = parseInt(req.query.cantidadDeColumnas);
+
+  models.materia
     .findAll({
-      attributes: ["id" , "nombre" , "id_carrera"] ,
-      include: [{ as: "Carrera-Relacionada", model: models.carrera, attributes: [ "id", "nombre" ]}]
+      attributes: ["id", "nombre", "id_carrera"],
+      include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
+      offset: (paginaActual - 1 ) * limite,
+      limit: limite
     })
-    .then(alumno => res.send(alumno))
+    .then(materia => res.send(materia))
     .catch(() => res.sendStatus(500));
 });
 
