@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+//routes
 app.use('/car', carrerasRouter);
 app.use('/mat', materiasRouter);
 app.use('/alu', alumnosRouter);
