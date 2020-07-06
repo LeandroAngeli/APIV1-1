@@ -2,10 +2,18 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
+
+
+
 router.get("/", (req, res) => {
+  const paginaActual = parseInt(req.query.numeroDePagina);
+  const limite = parseInt(req.query.cantidadDeColumnas);
+  
   models.carrera
     .findAll({
-      attributes: ["id", "nombre"]
+      attributes: ["id", "nombre"],
+      offset: (paginaActual - 1 ) * limite,
+      limit: limite
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
