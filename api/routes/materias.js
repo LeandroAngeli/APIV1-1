@@ -3,8 +3,8 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  const paginaActual = parseInt(req.query.numeroDePagina);
-  const limite = parseInt(req.query.cantidadDeColumnas);
+  const paginaActual = parseInt( req.query.numeroDePagina );
+  const limite = parseInt( req.query.cantidadDeColumnas );
 
   models.materia
     .findAll({
@@ -16,7 +16,6 @@ router.get("/", (req, res) => {
     .then(materia => res.send(materia))
     .catch(() => res.sendStatus(500));
 });
-
 
 router.post("/", (req, res) => {
   models.materia

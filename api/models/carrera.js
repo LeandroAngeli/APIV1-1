@@ -1,9 +1,15 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const carrera = sequelize.define('carrera', {
-    nombre: DataTypes.STRING
+    nombre: DataTypes.STRING,
+    id_instituto: DataTypes.INTEGER
   }, {});
+
   carrera.associate = function(models) {
+    carrera.belongsTo(models.instituto, { 
+      as: "Instituto-Relacionado", 
+      foreignKey: "id_instituto"
+    })
     carrera.hasMany(models.materia, { 
       as:"materia", 
       primaryKey: "id"
@@ -13,5 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey:"id"
     })
   };
+
   return carrera;
 };

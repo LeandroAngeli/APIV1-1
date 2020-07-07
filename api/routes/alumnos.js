@@ -6,14 +6,14 @@ router.get("/", (req, res) => {
   const paginaActual = parseInt(req.query.numeroDePagina);
   const limite = parseInt(req.query.cantidadDeColumnas);
 
-  models.materia
+  models.alumno
     .findAll({
       attributes: ["id", "nombre", "id_carrera"],
       include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
       offset: (paginaActual - 1 ) * limite,
       limit: limite
     })
-    .then(materia => res.send(materia))
+    .then(alumno => res.send(alumno))
     .catch(() => res.sendStatus(500));
 });
 
