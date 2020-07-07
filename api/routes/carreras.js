@@ -12,6 +12,20 @@ router.get("/", (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
+router.get("/pag", (req, res) => {
+  const paginaActual = parseInt(req.query.paginaActual);
+  const cantidadAVer = parseInt(req.query.cantidadAVer);
+
+  models.carrera
+    .findAll({
+      attributes: ["id", "nombre"],
+      offset:(paginaActual - 1) * cantidadAVer,
+      limit: cantidadAVer
+    })
+    .then(carreras => res.send(carreras))
+    .catch(() => res.sendStatus(500));
+});
+
 router.post("/", (req, res) => {
   models.carrera
     .create({ nombre: req.body.nombre })
