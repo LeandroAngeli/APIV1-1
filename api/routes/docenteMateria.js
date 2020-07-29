@@ -4,26 +4,30 @@ var models = require("../models");
 
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
-  models.materia
+  models.docente_materia
     .findAll({
-      attributes: ["id", "nombre", "id_carrera"],
-      include: [{
-        as: 'Carrera-Relacionada',
-        model: models.carrera,
+      attributes: ["id", "id_docente", "id_materia"],
+      include:[{
+        as: 'Docente-Relacionado',
+        model: models.docente,
+        attributes: ['id', 'nombre']
+      },{
+        as: 'Materia-Relacionada',
+        model: models.materia,
         attributes: ['id', 'nombre']
       }]
     })
-    .then(materia => res.send(materia))
+    .then(docenteMateria => res.send(docenteMateria))
     .catch(() => res.sendStatus(500));
 });
 
 router.post("/", (req, res) => {
-  models.materia
-    .create({ nombre: req.body.nombre, id_carrera: req.body.id_carrera })
-    .then(materia => res.status(201).send({ id: materia.id }))
+  models.docente_materia
+    .create({ id_docente: req.body.id_docente, id_materia: req.body.id_materia })
+    .then(docenteMateria => res.status(201).send({ id: docenteMateria.id }))
     .catch(error => {
       if (error == "SequelizeUniqueConstraintError: Validation error") {
-        res.status(400).send('Bad request: existe otra materia con el mismo nombre')
+        res.status(400).send('Bad request')
       }
       else {
         console.log(`Error al intentar insertar en la base de datos: ${error}`)
@@ -32,44 +36,48 @@ router.post("/", (req, res) => {
     });
 });
 
-const findMateria = (id, { onSuccess, onNotFound, onError }) => {
-  models.materia
+const findDocenteMateria = (id, { onSuccess, onNotFound, onError }) => {
+  models.docente_materia
     .findOne({
-      attributes: ["id", "nombre", "id_carrera"],
+      attributes: ["id", "id_docente", "id_materia"],
       where: { id },
-      include: [{
-        as: 'Carrera-Relacionada',
-        model: models.carrera,
+      include:[{
+        as: 'Docente-Relacionado',
+        model: models.docente,
+        attributes: ['id', 'nombre']
+      },{
+        as: 'Materia-Relacionada',
+        model: models.materia,
         attributes: ['id', 'nombre']
       }]
     })
-    .then(materia => (materia ? onSuccess(materia) : onNotFound()))
+    .then(docenteMateria => (docenteMateria ? onSuccess(docenteMateria) : onNotFound()))
     .catch(() => onError());
 };
 
 router.get("/:id", (req, res) => {
-  findMateria(req.params.id, {
-    onSuccess: materia => res.send(materia),
+  findDocenteMateria(req.params.id, {
+    onSuccess: docenteMateria => res.send(docenteMateria),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
   });
 });
 
 router.put("/:id", (req, res) => {
-  const onSuccess = materia =>
-    materia
-      .update({ nombre: req.body.nombre, id_carrera: req.body.id_carrera }, { fields: ["nombre"] ["id_carrera"] })
+  const onSuccess = docenteMateria =>
+    docenteMateria
+      .update({ id_docente: req.body.id_docente, id_materia: req.body.id_materia }, { fields: ["id_docente"] ["id_materia"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: existe otra materia con el mismo nombre')
+          res.status(400).send('Bad request')
         }
         else {
           console.log(`Error al intentar actualizar la base de datos: ${error}`)
           res.sendStatus(500)
         }
       });
-    findMateria(req.params.id, {
+    findDocenteMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -77,28 +85,16 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const onSuccess = materia =>
-    materia
+  const onSuccess = docenteMateria =>
+    docenteMateria
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findMateria(req.params.id, {
+  findDocenteMateria(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
   });
-});
-
-router.patch("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
-  models.materia
-    .findAll({
-      attributes: ["id", "nombre", "id_carrera"],
-      include:[{as: 'Carrera-Relacionada', model: models.carrera, attributes: ['id', 'nombre']}],
-      limit: 2
-    })
-    .then(materia => res.send(materia))
-    .catch(() => res.sendStatus(500));
 });
 
 module.exports = router;

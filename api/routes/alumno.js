@@ -6,18 +6,7 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.alumno
     .findAll({
-      attributes: ["id", "nombre", "id_materia"],
-      include:[{
-        as: 'Materia-Relacionada',
-        model: models.materia,
-        attributes: ['id', 'nombre', 'id_carrera']
-        ,
-        include:[{
-          as: 'Carrera-Relacionada',
-          model: models.carrera,
-          attributes: ['id', 'nombre']
-        }]
-      }]
+      attributes: ["id", "nombre"]
     })
     .then(alumno => res.send(alumno))
     .catch(() => res.sendStatus(500));
@@ -25,7 +14,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   models.alumno
-    .create({ nombre: req.body.nombre , id_materia:req.body.id_materia})
+    .create({ nombre: req.body.nombre })
     .then(alumno => res.status(201).send({ id: alumno.id }))
     .catch(error => {
       if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -41,19 +30,8 @@ router.post("/", (req, res) => {
 const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno
     .findOne({
-      attributes: ["id", "nombre", "id_materia"],
-      where: { id } ,
-      include:[{
-        as: 'Materia-Relacionada',
-        model: models.materia,
-        attributes: ['id', 'nombre', 'id_carrera']
-        ,
-        include:[{
-          as: 'Carrera-Relacionada',
-          model: models.carrera,
-          attributes: ['id', 'nombre']
-        }]
-      }]
+      attributes: ["id", "nombre"],
+      where: { id }
     })
     .then(alumno => (alumno ? onSuccess(alumno) : onNotFound()))
     .catch(() => onError());
@@ -99,6 +77,28 @@ router.delete("/:id", (req, res) => {
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
   });
+});
+
+router.patch("/", (req, res) => {
+  console.log("Esto es un mensaje para ver en consola");
+  models.alumno
+    .findAll({
+      attributes: ["id", "nombre"],
+      include:[{
+        as: 'Materia-Relacionada',
+        model: models.materia,
+        attributes: ['id', 'nombre', 'id_carrera']
+        ,
+        include:[{
+          as: 'Carrera-Relacionada',
+          model: models.carrera,
+          attributes: ['id', 'nombre']
+        }]
+      }],
+      limit: 2
+    })
+    .then(alumno => res.send(alumno))
+    .catch(() => res.sendStatus(500));
 });
 
 module.exports = router;

@@ -1,10 +1,7 @@
 'use strict';
-
-const { SELECT } = require("sequelize/types/lib/query-types");
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('alumnos', {
+    return queryInterface.createTable('docentes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -25,6 +22,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('alumnos');
+    return queryInterface.dropTable('docentes');
   }
 };
