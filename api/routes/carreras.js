@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.carrera
     .findAll({
-      attributes: ["id", "nombre"]
+      attributes: ["id_carrera", "nombre"]
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
@@ -30,7 +30,7 @@ router.post("/", (req, res) => {
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
-      attributes: ["id", "nombre"],
+      attributes: ["id_carrera", "nombre"],
       where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))
